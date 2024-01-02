@@ -1,0 +1,17 @@
+﻿version: '3.8'
+services:
+  theforum_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - theforum_db
+    ports:
+      - "80:80"
+      - "443:443"
+  theforum_db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    env_file: .env.db
+    ports:
+      - "1433:1433"

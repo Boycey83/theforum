@@ -1,0 +1,53 @@
+namespace theforum.Resources;
+
+public record ForumResources
+{
+    public string Title { get; init; } = string.Empty;
+    public string GetThreadsError { get; init; } = string.Empty;
+    public string GetRepliesError { get; init; } = string.Empty;
+    public string LogOutError { get; init; } = string.Empty;
+    public string PostedBy { get; init; } = string.Empty;
+    public string At { get; init; } = string.Empty;
+    public string On { get; init; } = string.Empty;
+    public string Reply { get; init; } = string.Empty;
+    public string WelcomeSubject { get; init; } = string.Empty;
+    public string WelcomeAccountName { get; init; } = string.Empty;
+    public string WelcomeDateTime { get; init; } = string.Empty;
+    public string WelcomeMessage { get; init; } = string.Empty;
+    public string UserAccountCreated { get; init; } = string.Empty;
+    public string AdminAccountName { get; init; } = string.Empty;
+    public string ActivationEmailMessage { get; init; } = string.Empty;
+    public string NewPost { get; init; } = string.Empty;
+    public string LoggedInAs { get; init; } = string.Empty;
+    public string Username { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public string Subject { get; init; } = string.Empty;
+    public string Message { get; init; } = string.Empty;
+    public string PostMessage { get; init; } = string.Empty;
+    public string PostingMessage { get; init; } = string.Empty;
+    public string CreateAccount { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string ConfirmPassword { get; init; } = string.Empty;
+    public string TryAgain { get; init; } = string.Empty;
+    public string CreatingAccount { get; init; } = string.Empty;
+    public string ResetPassword { get; init; } = string.Empty;
+    public string ResetPasswordInstructions { get; init; } = string.Empty;
+    public string EmailNotRecognised { get; init; } = string.Empty;
+    public string RequestPasswordReset { get; init; } = string.Empty;
+    public string AlreadyHaveResetCode { get; init; } = string.Empty;
+    public string VerifyingEmailAddress { get; init; } = string.Empty;
+    public string UpdatePassword { get; init; } = string.Empty;
+    public string UpdatingPassword { get; init; } = string.Empty;
+    public string EmailCode { get; init; } = string.Empty;
+    public string PasswordUpdatedSuccessfully { get; init; } = string.Empty;
+    public string Threads { get; init; } = string.Empty;
+    public string LoadingThreads { get; init; } = string.Empty;
+    public string AddMessage { get; init; } = string.Empty;
+    public string Logout { get; init; } = string.Empty;
+    public string SearchBoxPlaceholder { get; init; } = string.Empty;
+    public string Size { get; init; } = string.Empty;
+    public string From { get; init; } = string.Empty;
+    public string When { get; init; } = string.Empty;
+    public string PaginationTemplate { get; init; } = string.Empty;
+    public string UsernamePasswordIncorrect { get; init; } = string.Empty;
+}

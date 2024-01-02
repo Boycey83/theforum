@@ -1,0 +1,1 @@
+linkify.options.defaults.target = '_blank';
