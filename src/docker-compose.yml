@@ -12,8 +12,6 @@ services:
       - "443:443"
   theforum_db:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=abc@12345
+    env_file: .env.db
     ports:
       - "1433:1433"
