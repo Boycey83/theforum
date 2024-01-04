@@ -10,10 +10,8 @@ public class EmailHelper
 {
     private readonly EmailSettings _emailSettings;
 
-    public EmailHelper(IOptions<EmailSettings> emailSettings)
-    {
+    public EmailHelper(IOptions<EmailSettings> emailSettings) => 
         _emailSettings = emailSettings.Value;
-    }
 
     public void SendUserRegistrationEmail(string emailAddress, string username, int userId, Guid token)
     {
@@ -34,7 +32,9 @@ public class EmailHelper
             Credentials = new NetworkCredential(fromAddress.Address, _emailSettings.Password),
             Timeout = 20000
         };
-        using var message = new MailMessage(fromAddress, toAddress) { Subject = subject, Body = body };
+        using var message = new MailMessage(fromAddress, toAddress);
+        message.Subject = subject;
+        message.Body = body;
         smtp.Send(message);
     }
 
@@ -58,7 +58,9 @@ This code will expire after 24 hours.";
             Credentials = new NetworkCredential(fromAddress.Address, _emailSettings.Password),
             Timeout = 20000
         };
-        using var message = new MailMessage(fromAddress, toAddress) { Subject = subject, Body = body };
+        using var message = new MailMessage(fromAddress, toAddress);
+        message.Subject = subject;
+        message.Body = body;
         smtp.Send(message);
     }
 }

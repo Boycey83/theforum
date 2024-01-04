@@ -42,14 +42,12 @@ public class PostService
             return post;
         }
 
-        public IEnumerable<Post> GetThreadReplies(int threadId)
-        {
-            return _postRepository.GetTopPostsByThreadId(threadId);
-        }
+        public IEnumerable<Post> GetThreadReplies(int threadId) => 
+            _postRepository.GetTopPostsByThreadId(threadId);
 
         #region Validation Methods
 
-        private void ValidateCreatePost(UserAccount postedBy, Thread thread, string title, string message)
+        private static void ValidateCreatePost(UserAccount postedBy, Thread thread, string title, string message)
         {
             if (postedBy == null)
             {
@@ -69,7 +67,7 @@ public class PostService
             }
         }
 
-        private void ValidateCreatePost(UserAccount postedBy, Thread thread, Post parent, string title, string message)
+        private static void ValidateCreatePost(UserAccount postedBy, Thread thread, Post parent, string title, string message)
         {
             if (parent == null)
             {

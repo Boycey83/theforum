@@ -13,15 +13,15 @@ public record ThreadDto(
     int PostCount
 )
 {
-    public static ThreadDto BuildFromThread(Thread thread) =>
+    public static ThreadDto BuildFromThread(Thread t) =>
         new(
-            Id: thread.Id,
-            Title: thread.Title,
-            Message: thread.Message,
-            PostedByUsername: thread.PostedBy.Username,
-            PostedByEmailAddress: thread.PostedBy.EmailAddress,
-            CreatedDateTimeUtc: thread.CreatedDateTimeUtc,
-            LastPostDateTimeUtc: thread.LastPostDateTimeUtc,
-            PostCount: thread.PostCount + 1
+            Id: t.Id,
+            Title: t.Title,
+            Message: t.Message,
+            PostedByUsername: t.PostedBy.Username,
+            PostedByEmailAddress: t.PostedBy.EmailAddress,
+            CreatedDateTimeUtc: t.CreatedDateTimeUtc,
+            LastPostDateTimeUtc: t.LastPostDateTimeUtc,
+            PostCount: t.PostCount + 1
         );
 }

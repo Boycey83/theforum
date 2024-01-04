@@ -3,24 +3,18 @@ using NHibernate.Linq;
 using Thread = theforum.Model.Thread;
 
 namespace theforum.DataAccess;
-public class ThreadRepository : RepositoryBase, IThreadRepository
+public class ThreadRepository : IThreadRepository
     {
         private readonly ISession _session;
 
-        public ThreadRepository(ISession session)
-        {
+        public ThreadRepository(ISession session) =>
             _session = session;
-        }
 
-        public int CreateThread(Thread thread)
-        {
-            return (int)_session.Save(thread);
-        }
+        public int CreateThread(Thread thread) =>
+            (int)_session.Save(thread);
 
-        public Thread GetById(int threadId)
-        {
-            return _session.Get<Thread>(threadId);
-        }
+        public Thread GetById(int threadId) => 
+            _session.Get<Thread>(threadId);
 
         public void UpdateLastPostDateTimeUtc(int threadId, DateTime lastPostDateTimeUtc)
         {
@@ -37,33 +31,20 @@ public class ThreadRepository : RepositoryBase, IThreadRepository
             return query.Skip(threadsToSkip).Take(pageSize).Fetch(t => t.PostedBy);
         }
 
-        public int GetThreadCount()
-        {
-            return _session.Query<Thread>().Count();
-        }
+        public int GetThreadCount() => 
+            _session.Query<Thread>().Count();
 
-        private IQueryable<Thread> ApplyThreadSortOrder(ThreadSortOrder sortOrder, IQueryable<Thread> query)
-        {
-            switch (sortOrder)
+        private static IQueryable<Thread> ApplyThreadSortOrder(ThreadSortOrder sortOrder, IQueryable<Thread> query) =>
+            sortOrder switch
             {
-                case ThreadSortOrder.Date:
-                    return query.OrderBy(t => t.LastPostDateTimeUtc);
-                case ThreadSortOrder.DateDesc:
-                    return query.OrderByDescending(t => t.LastPostDateTimeUtc);
-                case ThreadSortOrder.PostedBy:
-                    return query.OrderBy(t => t.PostedBy.Username);
-                case ThreadSortOrder.PostedByDesc:
-                    return query.OrderByDescending(t => t.PostedBy.Username);
-                case ThreadSortOrder.Subject:
-                    return query.OrderBy(t => t.Title);
-                case ThreadSortOrder.SubjectDesc:
-                    return query.OrderByDescending(t => t.Title);
-                case ThreadSortOrder.Size:
-                    return query.OrderBy(t => t.PostCount);
-                case ThreadSortOrder.SizeDesc:
-                    return query.OrderByDescending(t => t.PostCount);
-                default:
-                    throw new ArgumentException("ThreadSortOrder not recognised");
+                ThreadSortOrder.Date => query.OrderBy(t => t.LastPostDateTimeUtc),
+                ThreadSortOrder.DateDesc => query.OrderByDescending(t => t.LastPostDateTimeUtc),
+                ThreadSortOrder.PostedBy => query.OrderBy(t => t.PostedBy.Username),
+                ThreadSortOrder.PostedByDesc => query.OrderByDescending(t => t.PostedBy.Username),
+                ThreadSortOrder.Subject => query.OrderBy(t => t.Title),
+                ThreadSortOrder.SubjectDesc => query.OrderByDescending(t => t.Title),
+                ThreadSortOrder.Size => query.OrderBy(t => t.PostCount),
+                ThreadSortOrder.SizeDesc => query.OrderByDescending(t => t.PostCount),
+                _ => throw new ArgumentException("ThreadSortOrder not recognised")
             };
-        }
     }

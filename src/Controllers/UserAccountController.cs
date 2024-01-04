@@ -13,47 +13,37 @@ public class UserAccountController : ControllerBase
 {
     private readonly UserAccountService _userAccountService;
 
-    public UserAccountController(UserAccountService userAccountService)
-    {
+    public UserAccountController(UserAccountService userAccountService) => 
         _userAccountService = userAccountService;
-    }
 
     [HttpPost]
     [Route("Register")]
-    public void Register(UserRegistrationSubmissionDto userSubmission)
-    {
+    public void Register(UserRegistrationSubmissionDto userSubmission) => 
         _userAccountService.CreateUser(userSubmission.EmailAddress,
             userSubmission.Username,
             userSubmission.Password,
             userSubmission.PasswordConfirm);
-    }
 
     [HttpPost]
     [Route("RequestPasswordReset")]
-    public IActionResult RequestPasswordReset(RequestPasswordResetDto requestPasswordResetDto)
-    {
-        return _userAccountService.RequestPasswordReset(requestPasswordResetDto.EmailAddress) 
+    public IActionResult RequestPasswordReset(RequestPasswordResetDto requestPasswordResetDto) =>
+        _userAccountService.RequestPasswordReset(requestPasswordResetDto.EmailAddress) 
             ? Ok() 
             : NotFound();
-    }
 
     [HttpPost]
     [Route("VerifyPasswordResetEmail")]
-    public bool VerifyPasswordResetEmail(RequestPasswordResetDto requestPasswordResetDto)
-    {
-        return _userAccountService.VerifyPasswordResetEmail(requestPasswordResetDto.EmailAddress);
-    }
+    public bool VerifyPasswordResetEmail(RequestPasswordResetDto requestPasswordResetDto) => 
+        _userAccountService.VerifyPasswordResetEmail(requestPasswordResetDto.EmailAddress);
 
     [HttpPost]
     [Route("UpdatePassword")]
-    public void UpdatePassword (UpdatePasswordDto updatePasswordDto)
-    {
+    public void UpdatePassword (UpdatePasswordDto updatePasswordDto) =>
         _userAccountService.UpdatePassword(
             updatePasswordDto.EmailAddress,
             updatePasswordDto.AuthenticationCode,
             updatePasswordDto.Password,
             updatePasswordDto.PasswordConfirm);
-    }
 
     [HttpPost]
     [Route("Login")]
@@ -67,8 +57,8 @@ public class UserAccountController : ControllerBase
         }
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, loginCredentials.Username),
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+            new(ClaimTypes.Name, loginCredentials.Username),
+            new(ClaimTypes.NameIdentifier, userId.ToString())
         };
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var authProperties = new AuthenticationProperties
@@ -85,8 +75,6 @@ public class UserAccountController : ControllerBase
 
     [HttpPost]
     [Route("Logout")]
-    public async Task Logout()
-    {
+    public async Task Logout() => 
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    }   
 }

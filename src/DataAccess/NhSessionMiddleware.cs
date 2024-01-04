@@ -4,10 +4,8 @@ public class NhSessionMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public NhSessionMiddleware(RequestDelegate next)
-    {
+    public NhSessionMiddleware(RequestDelegate next) => 
         _next = next;
-    }
 
     public async Task InvokeAsync(HttpContext context, NHibernate.ISession session)
     {
@@ -52,8 +50,6 @@ public class NhSessionMiddleware
 // Extension method to make it easy to add the middleware
 public static class NhSessionMiddlewareExtensions
 {
-    public static IApplicationBuilder UseNhSessionMiddleware(this IApplicationBuilder builder)
-    {
-        return builder.UseMiddleware<NhSessionMiddleware>();
-    }
+    public static IApplicationBuilder UseNhSessionMiddleware(this IApplicationBuilder builder) => 
+        builder.UseMiddleware<NhSessionMiddleware>();
 }
