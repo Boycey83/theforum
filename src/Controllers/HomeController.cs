@@ -19,22 +19,16 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
-    {
-        return View(new ForumViewModel(_forumResources));
-    }
+    public IActionResult Index() => 
+        View(new ForumViewModel(_forumResources));
 
     [HttpGet("Thread/{threadId:int}")]
-    public IActionResult Thread(int threadId)
-    {
-        return View("Index", new ForumViewModel(_forumResources, threadId));
-    }
+    public IActionResult Thread(int threadId) => 
+        View("Index", new ForumViewModel(_forumResources, threadId));
 
     [HttpGet("Thread/{threadId:int}/Reply/{replyId:int}")]
-    public IActionResult Reply(int threadId, int replyId)
-    {
-        return View("Index", new ForumViewModel(_forumResources, threadId, replyId));
-    }
+    public IActionResult Reply(int threadId, int replyId) => 
+        View("Index", new ForumViewModel(_forumResources, threadId, replyId));
 
     [HttpGet("UserAccount/{userAccountId:int}/Confirm/{tokenString}")]
     public IActionResult ConfirmUserAccount(int userAccountId, string tokenString)

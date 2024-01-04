@@ -40,7 +40,7 @@ public class ThreadService
         return _threadRepository.GetThreadCount();
     }
 
-    private void ValidateCreateThread(UserAccount postedBy, string title, string message)
+    private static void ValidateCreateThread(UserAccount postedBy, string title, string message)
     {
         if (postedBy == null)
         {

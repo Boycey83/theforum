@@ -64,6 +64,10 @@ public class UserAccountService
     {
         emailAddress = emailAddress.Trim();
         var userAccount = _userAccountRepository.GetByEmail(emailAddress);
+        if (userAccount == null)
+        {
+            throw new ArgumentException($"No matching user account found with email: {emailAddress}");
+        }
         ValidateUpdatePassword(authenticationCode, password, passwordConfirm, userAccount);
         userAccount.PasswordSalt = AuthenticationHelper.GetPasswordSalt();
         userAccount.PasswordHash = AuthenticationHelper.GetPasswordHash(password, userAccount.PasswordSalt);

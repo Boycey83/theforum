@@ -12,10 +12,8 @@ public class ValidationExceptionFilter : IAsyncExceptionFilter
 {
     private readonly ISession _session;
 
-    public ValidationExceptionFilter(ISession session)
-    {
+    public ValidationExceptionFilter(ISession session) => 
         _session = session;
-    }
 
     public async Task OnExceptionAsync(ExceptionContext context)
     {
