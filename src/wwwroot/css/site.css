@@ -1,8 +1,12 @@
+:root {
+    --body-bg-color: #262729; /* Default value */
+    --primary-text-color: #000000; /* Default value */
+}
 
 body {
     padding-top: 50px;
     padding-bottom: 20px;
-    background-color: #262729;
+    background-color: var(--body-bg-color);
     color: #a9a9a9;
 }
 
