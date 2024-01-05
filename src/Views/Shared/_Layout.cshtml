@@ -9,6 +9,8 @@
         <title>@ViewBag.Title</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <link href="/css/bundle.css" rel="stylesheet"/>
+        @await RenderSectionAsync("styleOverrides", required: false)
+
     </head>
     <body>
         <div class="container-fluid body-content">
