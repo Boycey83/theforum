@@ -1,14 +1,12 @@
 @model theforum.ViewModels.ForumViewModel
 @using theforum.Views.Home
 
-@{ ViewBag.Title = @Model.Resources.Title; }
+@{ ViewBag.Title = Model.Resources.Title; }
 
 @section styleOverrides
 {   
     <style>
-        :root {
-            --body-bg-color: @Model.StyleSettings.BodyBgColor;
-        }
+        @Model.StyleSettings.AsCss;
     </style>
 }
 
