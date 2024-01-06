@@ -56,10 +56,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Register configurations
 builder.Configuration.AddJsonFile("appsettings.resources.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.styles.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<ForumResources>(builder.Configuration.GetSection("Resources").GetSection("Forum"));
+builder.Services.Configure<StyleSettings>(builder.Configuration.GetSection("Themes").GetSection("Forum"));
 
 // Database connections
 var masterConnectionString = builder.Configuration.GetConnectionString("MasterDatabase");
