@@ -10,6 +10,15 @@
     </style>
 }
 
+@section styleOverrides
+{   
+    <style>
+        :root {
+            --body-bg-color: @Model.StyleSettings.BodyBgColor;
+        }
+    </style>
+}
+
 @section scripts
 {
     <script type="text/javascript">

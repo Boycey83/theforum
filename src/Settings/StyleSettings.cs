@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Html;
 
 namespace theforum.Settings;
 
@@ -35,4 +35,4 @@ public record StyleSettings
                   --dark-section-bg-color: {{DarkSectionBgColor}};
               }
               """);
-}
+              
