@@ -14,25 +14,14 @@ public class HomeController : Controller
     private readonly ForumResources _forumResources;
     private readonly StyleSettings _styleSettings;
 
-    public HomeController(UserAccountService userAccountService, IOptions<ForumResources> forumResources)
+    public HomeController(
+        UserAccountService userAccountService,
+        IOptions<ForumResources> forumResources,
+        IOptions<StyleSettings> styleSettings)
     {
         _userAccountService = userAccountService;
         _forumResources = forumResources.Value;
-        _styleSettings = new StyleSettings
-        {
-            PrimaryBgColor = "#262729",
-            PrimaryAccentColor = "#90704e",
-            SecondaryAccentColor = "#ad855c",
-            BodyTextColor = "#a9a9a9",
-            DarkTextColor = "#2b241b",
-            SectionBgColor = "#393b3d",
-            DividerColor = "#46484a",
-            NeutralAccentColor = "#757778",
-            SoftDividerColor = "#5c5951",
-            LightAccentColor = "#b8b8b8",
-            MutedAccentColor = "#7c7875",
-            DarkSectionBgColor = "#353638"
-        };
+        _styleSettings = styleSettings.Value;
     }
 
     [HttpGet]

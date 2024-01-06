@@ -268,11 +268,11 @@
     <div class="col-xs-12 col-sm-6 col-md-8 col-lg-9 forum-right-side">
         <div class="top-toolbar row">
             <div class="col-xs-12">
-                <span class="link-text" data-bind="visible: !isLoadingThreads(), click: reloadThreads">@Model.Resources.Threads</span> |
+                <span class="link-text" data-bind="visible: !isLoadingThreads(), click: reloadThreads">@Model.Resources.Threads</span>
                 <span class="no-click-text" data-bind="visible: isLoadingThreads, click: reloadThreads">
                     @Model.Resources.LoadingThreads
                     <a class="glyphicon glyphicon-refresh spinning"></a>
-                </span>
+                </span> |
                 <span class="link-text" data-bind="click: showNewThreadForm">@Model.Resources.AddMessage</span> |
                 <span class="link-text" data-bind="visible: isLoggedIn, click: logout">@Model.Resources.Logout</span>
                 <span class="link-text" data-bind="visible: !isLoggedIn(), click: showNewAccountForm">
