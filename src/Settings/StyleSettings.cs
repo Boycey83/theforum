@@ -16,6 +16,7 @@ public record StyleSettings
     public string LightAccentColor { get; init; } = string.Empty;
     public string MutedAccentColor { get; init; } = string.Empty;
     public string DarkSectionBgColor { get; init; } = string.Empty;
+    public string InputTextColor { get; init; } = string.Empty;
 
     public IHtmlContent AsCss =>
         new HtmlString(
@@ -33,6 +34,7 @@ public record StyleSettings
                   --light-accent-color: {{LightAccentColor}};
                   --muted-accent-color: {{MutedAccentColor}};
                   --dark-section-bg-color: {{DarkSectionBgColor}};
+                  --input-text-color: {{InputTextColor}};
               }
               """);
 }
