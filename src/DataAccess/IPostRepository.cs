@@ -4,7 +4,7 @@ namespace theforum.DataAccess;
 
 public interface IPostRepository
 {
-    Post GetById(int value);
-    int CreatePost(Post reply);
-    IEnumerable<Post> GetTopPostsByThreadId(int threadId);
+    Task<Post> GetById(int value);
+    Task<int> CreatePost(Post reply);
+    Task<IEnumerable<Post>> GetTopPostsByThreadId(int threadId);
 }

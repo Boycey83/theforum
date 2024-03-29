@@ -17,28 +17,24 @@ public class ThreadService
         _threadRepository = threadRepository;
     }
 
-    public Thread CreateThread(int userId, string title, string message)
+    public async Task<Thread> CreateThread(int userId, string title, string message)
     {
         title = title.Trim();
         message = message.Trim();
-        var postedBy = _userAccountRepository.GetById(userId);
+        var postedBy = await _userAccountRepository.GetById(userId);
         ValidateCreateThread(postedBy, title, message);
         var createdDateTimeUtc = DateTime.UtcNow;
         var thread = new Thread(postedBy, title, message, createdDateTimeUtc);
-        var threadId = _threadRepository.CreateThread(thread);
+        var threadId = await _threadRepository.CreateThread(thread);
         thread.Id = threadId;
         return thread;
     }
 
-    public IEnumerable<Thread> GetTopThreads(ThreadSortOrder sortOrder, int pageNumber, int pageSize)
-    {
-        return _threadRepository.GetTopThreads(sortOrder, pageNumber, pageSize);
-    }
+    public async Task<IEnumerable<Thread>> GetTopThreads(ThreadSortOrder sortOrder, int pageNumber, int pageSize) => 
+        await _threadRepository.GetTopThreads(sortOrder, pageNumber, pageSize);
 
-    public int GetThreadCount()
-    {
-        return _threadRepository.GetThreadCount();
-    }
+    public async Task<int> GetThreadCount() =>
+        await _threadRepository.GetThreadCount();
 
     private static void ValidateCreateThread(UserAccount postedBy, string title, string message)
     {

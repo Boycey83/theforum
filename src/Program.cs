@@ -8,6 +8,7 @@ using NHibernate;
 using theforum.BusinessLogic;
 using theforum.DataAccess;
 using theforum.Filters;
+using theforum.HealthChecks;
 using theforum.Resources;
 using theforum.Settings;
 using ISession = NHibernate.ISession;
@@ -90,6 +91,9 @@ builder.Services.AddScoped<EmailHelper>();
 builder.Services.AddScoped<UserAccountService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ThreadService>();
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database");
+
 
 // WebOptimizer for bundling and minification
 builder.Services.AddWebOptimizer(pipeline =>
@@ -145,6 +149,7 @@ app.UseWebOptimizer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health");
 app.UseNhSessionMiddleware();
 app.Run();
 return;

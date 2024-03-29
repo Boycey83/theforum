@@ -16,7 +16,7 @@ public class UserAccountService
         _emailHelper = emailHelper;
     }
 
-    public int CreateUser(string userEmail, string username, string password, string passwordConfirm)
+    public async Task<int> CreateUser(string userEmail, string username, string password, string passwordConfirm)
     {
         if (!string.IsNullOrEmpty(userEmail))
         {
@@ -28,42 +28,44 @@ public class UserAccountService
             username = username.Trim();
         }
 
-        ValidateCreate(userEmail, username, password, passwordConfirm);
+        await ValidateCreate(userEmail, username, password, passwordConfirm);
         var passwordSalt = AuthenticationHelper.GetPasswordSalt();
         var passwordHash = AuthenticationHelper.GetPasswordHash(password, passwordSalt);
         var token = Guid.NewGuid();
         var userAccount = new UserAccount(userEmail, username, passwordSalt, passwordHash, token);
-        var userAccountId = _userAccountRepository.CreateUser(userAccount);
+        var userAccountId = await _userAccountRepository.CreateUser(userAccount);
+        // TODO: Check if this should be async? feels like it...
         _emailHelper.SendUserRegistrationEmail(userEmail, username, userAccountId, token);
         return userAccountId;
     }
 
-    public bool VerifyPasswordResetEmail(string emailAddress)
+    public async Task<bool> VerifyPasswordResetEmail(string emailAddress)
     {
         emailAddress = emailAddress.Trim();
-        var userAccount = _userAccountRepository.GetByEmail(emailAddress);
+        var userAccount = await _userAccountRepository.GetByEmail(emailAddress);
         return userAccount != null;
     }
 
-    public bool RequestPasswordReset(string emailAddress)
+    public async Task<bool> RequestPasswordReset(string emailAddress)
     {
         emailAddress = emailAddress.Trim();
-        var userAccount = _userAccountRepository.GetByEmail(emailAddress);
+        var userAccount = await _userAccountRepository.GetByEmail(emailAddress);
         if (userAccount == null)
         {
             return false;
         }
         userAccount.ResetToken = Guid.NewGuid();
         userAccount.ResetTokenExpiry = DateTime.UtcNow.AddDays(1);
-        _userAccountRepository.UpdateUser(userAccount);
+        await _userAccountRepository.UpdateUser(userAccount);
+        // TODO: Check if this should be async? feels like it...
         _emailHelper.SendUserPasswordResetEmail(userAccount);
         return true;
     }
 
-    public void UpdatePassword(string emailAddress, string authenticationCode, string password, string passwordConfirm)
+    public async Task UpdatePassword(string emailAddress, string authenticationCode, string password, string passwordConfirm)
     {
         emailAddress = emailAddress.Trim();
-        var userAccount = _userAccountRepository.GetByEmail(emailAddress);
+        var userAccount =  await _userAccountRepository.GetByEmail(emailAddress);
         if (userAccount == null)
         {
             throw new ArgumentException($"No matching user account found with email: {emailAddress}");
@@ -73,39 +75,35 @@ public class UserAccountService
         userAccount.PasswordHash = AuthenticationHelper.GetPasswordHash(password, userAccount.PasswordSalt);
         userAccount.ResetTokenExpiry = null;
         userAccount.ResetToken = null;
-        _userAccountRepository.UpdateUser(userAccount);
+        await _userAccountRepository.UpdateUser(userAccount);
     }
 
-    public int ValidateUser(string username, string password)
+    public async Task<int> ValidateUser(string username, string password)
     {
-        var userAccount =
+        var userAccount = await 
             GetByUserAccountByUsernameAndValidateUsername(username, ExceptionMessages.ValidateUsernameNotFound);
         ValidateAccountIsActivated(userAccount);
-        if (AuthenticationHelper.ValidatePassword(userAccount.PasswordSalt, userAccount.PasswordHash, password))
-        {
-            return userAccount.Id;
-        }
-
-        return 0;
+        return AuthenticationHelper.ValidatePassword(userAccount.PasswordSalt, userAccount.PasswordHash, password) 
+            ? userAccount.Id 
+            : 0;
     }
 
-    public bool ActivateUser(int id, Guid token)
+    public async Task<bool> ActivateUser(int id, Guid token)
     {
-        var userAccount = GetByUserAccountByIdAndValidateId(id);
-        if (userAccount.Token == token)
+        var userAccount = await GetByUserAccountByIdAndValidateId(id);
+        if (userAccount.Token != token)
         {
-            _userAccountRepository.ActivateAccount(id);
-            return true;
+            return false;
         }
-
-        return false;
+        await _userAccountRepository.ActivateAccount(id);
+        return true;
     }
 
     #region Validation Methods
 
-    private UserAccount GetByUserAccountByUsernameAndValidateUsername(string username, string exceptionMessage)
+    private async Task<UserAccount> GetByUserAccountByUsernameAndValidateUsername(string username, string exceptionMessage)
     {
-        var userAccount = _userAccountRepository.GetByUsername(username);
+        var userAccount = await _userAccountRepository.GetByUsername(username);
         if (userAccount == null)
         {
             throw new ValidationException(string.Format(exceptionMessage, username));
@@ -113,9 +111,9 @@ public class UserAccountService
         return userAccount;
     }
 
-    private UserAccount GetByUserAccountByIdAndValidateId(int userId)
+    private async Task<UserAccount> GetByUserAccountByIdAndValidateId(int userId)
     {
-        var userAccount = _userAccountRepository.GetById(userId);
+        var userAccount = await _userAccountRepository.GetById(userId);
         if (userAccount == null)
         {
             throw new ValidationException(string.Format(ExceptionMessages.UserAccountUserIdNotFound));
@@ -123,7 +121,7 @@ public class UserAccountService
         return userAccount;
     }
 
-    private void ValidateAccountIsActivated(UserAccount userAccount)
+    private static void ValidateAccountIsActivated(UserAccount userAccount)
     {
         if (!userAccount.IsActivated)
         {
@@ -132,14 +130,14 @@ public class UserAccountService
         }
     }
 
-    private void ValidateCreate(string userEmail, string username, string password, string passwordConfirm)
+    private async Task ValidateCreate(string userEmail, string username, string password, string passwordConfirm)
     {
-        ValidateUserAccountEmail(userEmail);
-        ValidateUserAccountUsername(username);
+        await ValidateUserAccountEmail(userEmail);
+        await ValidateUserAccountUsername(username);
         ValidateUserAccountPassword(password, passwordConfirm);
     }
 
-    private void ValidateUserAccountPassword(string password, string passwordConfirm)
+    private static void ValidateUserAccountPassword(string password, string passwordConfirm)
     {
         if (string.IsNullOrEmpty(password))
         {
@@ -157,7 +155,7 @@ public class UserAccountService
         }
     }
 
-    private void ValidateUserAccountEmail(string userEmail)
+    private async Task ValidateUserAccountEmail(string userEmail)
     {
         if (string.IsNullOrEmpty(userEmail))
         {
@@ -169,48 +167,45 @@ public class UserAccountService
             throw new ValidationException(ExceptionMessages.CreateUserAccountEmailAddressTooLong);
         }
 
-        if (!userEmail.Contains("@"))
+        if (!userEmail.Contains('@'))
         {
             throw new ValidationException(string.Format(ExceptionMessages.CreateUserAccountEmailAddressNoAtSymbol,
                 userEmail));
         }
 
-        if (!userEmail.Contains("."))
+        if (!userEmail.Contains('.'))
         {
             throw new ValidationException(string.Format(ExceptionMessages.CreateUserAccountEmailAddressNoDotSymbol,
                 userEmail));
         }
-
-        ValidateDuplicateEmail(userEmail);
+        await ValidateDuplicateEmail(userEmail);
     }
 
-    private void ValidateUserAccountUsername(string username)
+    private async Task ValidateUserAccountUsername(string username)
     {
         if (string.IsNullOrEmpty(username))
         {
             throw new ValidationException(ExceptionMessages.CreateUserAccountEmptyUsername);
         }
-
         if (username.Length > 30)
         {
             throw new ValidationException(ExceptionMessages.CreateUserAccountUsernameTooLong);
         }
-
-        ValidateDuplicateUsername(username);
+        await ValidateDuplicateUsername(username);
     }
 
-    private void ValidateDuplicateEmail(string userEmail)
+    private async Task ValidateDuplicateEmail(string userEmail)
     {
-        if (_userAccountRepository.ExistsWithEmail(userEmail))
+        if (await _userAccountRepository.ExistsWithEmail(userEmail))
         {
             throw new ValidationException(string.Format(ExceptionMessages.CreateUserAccountEmailAddressDuplicate,
                 userEmail));
         }
     }
 
-    private void ValidateDuplicateUsername(string username)
+    private async Task ValidateDuplicateUsername(string username)
     {
-        if (_userAccountRepository.ExistsWithUsername(username))
+        if (await _userAccountRepository.ExistsWithUsername(username))
         {
             throw new ValidationException(string.Format(ExceptionMessages.CreateUserAccountUsernameDuplicate,
                 username));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Html;
+using System.Text;
 
 namespace theforum.Settings;
 
@@ -17,22 +18,32 @@ public record StyleSettings
     public string MutedAccentColor { get; init; } = string.Empty;
     public string DarkSectionBgColor { get; init; } = string.Empty;
 
-    public IHtmlContent AsCss =>
-        new HtmlString(
-            $$"""
-              :root {
-                  --primary-accent-color: {{PrimaryAccentColor}};
-                  --secondary-accent-color: {{SecondaryAccentColor}};
-                  --body-text-color: {{BodyTextColor}};
-                  --dark-text-color: {{DarkTextColor}};
-                  --section-bg-color: {{SectionBgColor}};
-                  --primary-bg-color: {{PrimaryBgColor}};
-                  --divider-color: {{DividerColor}};
-                  --neutral-accent-color: {{NeutralAccentColor}};
-                  --soft-divider-color: {{SoftDividerColor}};
-                  --light-accent-color: {{LightAccentColor}};
-                  --muted-accent-color: {{MutedAccentColor}};
-                  --dark-section-bg-color: {{DarkSectionBgColor}};
-              }
-              """);
+    public IHtmlContent AsCss => RenderStylesAsCssVariables();
+
+    private IHtmlContent RenderStylesAsCssVariables()
+    {
+        var sb = new StringBuilder(":root {");
+        AddCssVariable(sb, "primary-bg-color", PrimaryBgColor);
+        AddCssVariable(sb, "primary-accent-color", PrimaryAccentColor);
+        AddCssVariable(sb, "secondary-accent-color", SecondaryAccentColor);
+        AddCssVariable(sb, "body-text-color", BodyTextColor);
+        AddCssVariable(sb, "dark-text-color", DarkTextColor);
+        AddCssVariable(sb, "section-bg-color", SectionBgColor);
+        AddCssVariable(sb, "divider-color", DividerColor);
+        AddCssVariable(sb, "neutral-accent-color", NeutralAccentColor);
+        AddCssVariable(sb, "soft-divider-color", SoftDividerColor);
+        AddCssVariable(sb, "light-accent-color", LightAccentColor);
+        AddCssVariable(sb, "muted-accent-color", MutedAccentColor);
+        AddCssVariable(sb, "dark-section-bg-color", DarkSectionBgColor);
+        sb.Append('}');
+        return new HtmlString(sb.ToString());
+    }
+
+    private static void AddCssVariable(StringBuilder sb, string name, string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            sb.AppendLine($" --{name}: {value};");
+        }
+    }
 }

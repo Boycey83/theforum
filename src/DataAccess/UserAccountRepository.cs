@@ -1,3 +1,4 @@
+using NHibernate.Criterion;
 using ISession = NHibernate.ISession;
 using theforum.Model;
 
@@ -10,52 +11,60 @@ public class UserAccountRepository : IUserAccountRepository
     public UserAccountRepository(ISession session) => 
         _session = session;
 
-    public int CreateUser(UserAccount userAccount) => 
-        (int)_session.Save(userAccount);
+    public async Task<int> CreateUser(UserAccount userAccount) => 
+        (int) await _session.SaveAsync(userAccount);
 
-    public void ChangePassword(int userAccountId, string passwordSalt, string passwordHash)
+    public async Task ChangePassword(int userAccountId, string passwordSalt, string passwordHash)
     {
-        var userAccount = _session.Get<UserAccount>(userAccountId);
+        var userAccount = await _session.GetAsync<UserAccount>(userAccountId);
         userAccount.PasswordSalt = passwordSalt;
         userAccount.PasswordHash = passwordHash;
-        _session.Update(userAccount);
+        await _session.UpdateAsync(userAccount);
     }
 
-    public UserAccount GetById(int id) => 
-        _session.Get<UserAccount>(id);
+    public async Task<UserAccount> GetById(int id) => 
+        await _session.GetAsync<UserAccount>(id);
 
-    public UserAccount? GetByEmail(string userAccountEmail) => 
-        _session
-            .Query<UserAccount>()
-            .SingleOrDefault(u => u.EmailAddress == userAccountEmail);
-
-    public UserAccount? GetByUsername(string username) => 
-        _session
-            .Query<UserAccount>()
-            .SingleOrDefault(u => u.Username == username);
-
-    public bool ExistsWithEmail(string userAccountEmail) => 
-        _session
-            .Query<UserAccount>()
-            .Any(u => u.EmailAddress == userAccountEmail);
-
-    public bool ExistsWithUsername(string username) => 
-        _session
-            .Query<UserAccount>()
-            .Any(u => u.Username == username);
-
-    public bool Exists(int userId) => 
-        _session
-            .Query<UserAccount>()
-            .Any(u => u.Id == userId);
-
-    public void ActivateAccount(int userAccountId)
+    public async Task<UserAccount?> GetByEmail(string userAccountEmail)
     {
-        var userAccount = _session.Get<UserAccount>(userAccountId);
-        userAccount.IsActivated = true;
-        _session.Update(userAccount);
+        UserAccount? user = null;
+        var users = await _session.QueryOver(() => user)
+            .Where(() => user.EmailAddress == userAccountEmail)
+            .ListAsync();
+        return users.SingleOrDefault();
     }
 
-    public void UpdateUser(UserAccount userAccount) => 
-        _session.Update(userAccount);
+    public async Task<UserAccount?> GetByUsername(string username)
+    {
+        UserAccount? user = null;
+        var users = await _session.QueryOver(() => user)
+            .Where(() => user.Username == username)
+            .ListAsync();
+        return users.SingleOrDefault();
+    }
+
+    public async Task<bool> ExistsWithEmail(string userAccountEmail) =>
+        await _session.QueryOver<UserAccount>()
+            .Where(user => user.EmailAddress == userAccountEmail)
+            .Select(Projections.RowCount())
+            .SingleOrDefaultAsync<int>() > 0;
+
+    public async Task<bool> ExistsWithUsername(string username) =>
+        await _session.QueryOver<UserAccount>()
+            .Where(user => user.Username == username)
+            .Select(Projections.RowCount())
+            .SingleOrDefaultAsync<int>() > 0;
+
+    public async Task<bool> Exists(int userId) => 
+        await _session.GetAsync<UserAccount>(userId) is not null;
+
+    public async Task ActivateAccount(int userAccountId)
+    {
+        var userAccount = await _session.GetAsync<UserAccount>(userAccountId);
+        userAccount.IsActivated = true;
+        await _session.UpdateAsync(userAccount);
+    }
+
+    public async Task UpdateUser(UserAccount userAccount) => 
+        await _session.UpdateAsync(userAccount);
 }

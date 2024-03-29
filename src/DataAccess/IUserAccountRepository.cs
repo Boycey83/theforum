@@ -4,14 +4,14 @@ namespace theforum.DataAccess;
 
 public interface IUserAccountRepository
 {
-    int CreateUser(UserAccount userAccount);
-    void ChangePassword(int userAccountId, string passwordSalt, string passwordHash);
-    UserAccount? GetByEmail(string userEmail);
-    UserAccount? GetByUsername(string username);
-    bool ExistsWithEmail(string userEmail);
-    bool ExistsWithUsername(string userEmail);
-    bool Exists(int userId);
-    UserAccount GetById(int userId);
-    void ActivateAccount(int id);
-    void UpdateUser(UserAccount userAccount);
+    Task<int> CreateUser(UserAccount userAccount);
+    Task ChangePassword(int userAccountId, string passwordSalt, string passwordHash);
+    Task<UserAccount?> GetByEmail(string userEmail);
+    Task<UserAccount?> GetByUsername(string username);
+    Task<bool> ExistsWithEmail(string userEmail);
+    Task<bool> ExistsWithUsername(string userEmail);
+    Task<bool> Exists(int userId);
+    Task<UserAccount> GetById(int userId);
+    Task ActivateAccount(int id);
+    Task UpdateUser(UserAccount userAccount);
 }
