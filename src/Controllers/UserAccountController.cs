@@ -18,28 +18,28 @@ public class UserAccountController : ControllerBase
 
     [HttpPost]
     [Route("Register")]
-    public void Register(UserRegistrationSubmissionDto userSubmission) => 
-        _userAccountService.CreateUser(userSubmission.EmailAddress,
+    public async Task Register(UserRegistrationSubmissionDto userSubmission) => 
+        await _userAccountService.CreateUser(userSubmission.EmailAddress,
             userSubmission.Username,
             userSubmission.Password,
             userSubmission.PasswordConfirm);
 
     [HttpPost]
     [Route("RequestPasswordReset")]
-    public IActionResult RequestPasswordReset(RequestPasswordResetDto requestPasswordResetDto) =>
-        _userAccountService.RequestPasswordReset(requestPasswordResetDto.EmailAddress) 
+    public async Task<IActionResult> RequestPasswordReset(RequestPasswordResetDto requestPasswordResetDto) =>
+        await _userAccountService.RequestPasswordReset(requestPasswordResetDto.EmailAddress) 
             ? Ok() 
             : NotFound();
 
     [HttpPost]
     [Route("VerifyPasswordResetEmail")]
-    public bool VerifyPasswordResetEmail(RequestPasswordResetDto requestPasswordResetDto) => 
-        _userAccountService.VerifyPasswordResetEmail(requestPasswordResetDto.EmailAddress);
+    public async Task<bool> VerifyPasswordResetEmail(RequestPasswordResetDto requestPasswordResetDto) => 
+        await _userAccountService.VerifyPasswordResetEmail(requestPasswordResetDto.EmailAddress);
 
     [HttpPost]
     [Route("UpdatePassword")]
-    public void UpdatePassword (UpdatePasswordDto updatePasswordDto) =>
-        _userAccountService.UpdatePassword(
+    public async Task UpdatePassword (UpdatePasswordDto updatePasswordDto) =>
+        await _userAccountService.UpdatePassword(
             updatePasswordDto.EmailAddress,
             updatePasswordDto.AuthenticationCode,
             updatePasswordDto.Password,
@@ -50,7 +50,7 @@ public class UserAccountController : ControllerBase
     public async Task<IActionResult> Login(LoginCredentialsDto loginCredentials)
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var userId = _userAccountService.ValidateUser(loginCredentials.Username, loginCredentials.Password);
+        var userId = await _userAccountService.ValidateUser(loginCredentials.Username, loginCredentials.Password);
         if (userId <= 0)
         {
             return Unauthorized();

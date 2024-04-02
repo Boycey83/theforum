@@ -14,14 +14,15 @@ public class PostRepository : IPostRepository
     public PostRepository(ISession session) =>
         _session = session;
 
-    public Post GetById(int id) => 
-        _session.Get<Post>(id);
+    public async Task<Post> GetById(int id) => 
+        await _session.GetAsync<Post>(id);
 
-    public int CreatePost(Post reply) => 
-        (int)_session.Save(reply);
+    public async Task<int> CreatePost(Post reply) => 
+        (int) await _session.SaveAsync(reply);
 
-    public IEnumerable<Post> GetTopPostsByThreadId(int threadId) =>
-        _session
+    public async Task<IEnumerable<Post>> GetTopPostsByThreadId(int threadId)
+    {
+        var posts = await _session
             .CreateCriteria<Post>()
             .Add(Restrictions.Eq("Thread.Id", threadId))
             .AddOrder(Order.Asc("CreatedDateTimeUtc"))
@@ -31,6 +32,7 @@ public class PostRepository : IPostRepository
             .SetFetchMode("PostedBy", FetchMode.Join)
             .SetResultTransformer(new DistinctRootEntityResultTransformer())
             .SetMaxResults(1250)
-            .List<Post>()
-            .Where(p => p.Parent == null);
+            .ListAsync<Post>();
+        return posts.Where(p => p.Parent == null);
+    }
 }

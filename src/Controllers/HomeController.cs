@@ -37,10 +37,10 @@ public class HomeController : Controller
         View("Index", new ForumViewModel(_forumResources, _styleSettings, threadId, replyId));
 
     [HttpGet("UserAccount/{userAccountId:int}/Confirm/{tokenString}")]
-    public IActionResult ConfirmUserAccount(int userAccountId, string tokenString)
+    public async Task<IActionResult> ConfirmUserAccount(int userAccountId, string tokenString)
     {
         var token = Guid.Parse(tokenString);
-        _userAccountService.ActivateUser(userAccountId, token);
+        await _userAccountService.ActivateUser(userAccountId, token);
         return RedirectToAction("Index");
     }
 }

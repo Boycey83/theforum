@@ -26,31 +26,25 @@ public class ForumController : Controller
 
     [HttpGet]
     [Route("Threads")]
-    public ThreadsContextDto GetThreads()
-    {
-        return GetThreads(ThreadSortOrder.DateDesc, 1);
-    }
+    public async Task<ThreadsContextDto> GetThreads() => 
+        await GetThreads(ThreadSortOrder.DateDesc, 1);
 
     [HttpGet]
     [Route("Threads/Page/{pageNumber:int}")]
-    public ThreadsContextDto GetThreads(int pageNumber)
-    {
-        return GetThreads(ThreadSortOrder.DateDesc, pageNumber);
-    }
+    public async Task<ThreadsContextDto> GetThreads(int pageNumber) => 
+        await GetThreads(ThreadSortOrder.DateDesc, pageNumber);
 
     [HttpGet]
     [Route("Threads/Sort/{sortOrder}")]
-    public ThreadsContextDto GetThreads(ThreadSortOrder sortOrder)
-    {
-        return GetThreads(sortOrder, 1);
-    }
+    public async Task<ThreadsContextDto> GetThreads(ThreadSortOrder sortOrder) => 
+        await GetThreads(sortOrder, 1);
 
     [HttpGet]
     [Route("Threads/Sort/{sortOrder}/Page/{pageNumber:int}")]
-    public ThreadsContextDto GetThreads(ThreadSortOrder sortOrder, int pageNumber)
+    public async Task<ThreadsContextDto> GetThreads(ThreadSortOrder sortOrder, int pageNumber)
     {
-        var threads = _threadService.GetTopThreads(sortOrder, pageNumber, PageSize);
-        var threadCount = _threadService.GetThreadCount();
+        var threads = await _threadService.GetTopThreads(sortOrder, pageNumber, PageSize);
+        var threadCount = await _threadService.GetThreadCount();
         return new ThreadsContextDto(
             Threads: threads.Select(ThreadDto.BuildFromThread),
             ThreadCount: threadCount,
@@ -61,9 +55,9 @@ public class ForumController : Controller
 
     [HttpGet]
     [Route("Thread/{threadId:int}/Replies")]
-    public IEnumerable<PostDto> GetThreadReplies(int threadId)
+    public async Task<IEnumerable<PostDto>> GetThreadReplies(int threadId)
     {
-        var posts = _postService.GetThreadReplies(threadId);
+        var posts = await _postService.GetThreadReplies(threadId);
         return posts.Select(PostDto.BuildFromPost);
     }
 
@@ -73,39 +67,39 @@ public class ForumController : Controller
 
     [HttpPost]
     [Route("Thread")]
-    public ThreadDto CreateNewThread(CreatePostDto postDto)
+    public async Task<ThreadDto> CreateNewThread(CreatePostDto postDto)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
         {
             throw new ValidationException(ExceptionMessages.CreateThreadMustBeLoggedIn);
         }
-        var thread = _threadService.CreateThread(userId, postDto.Title, postDto.Message);
+        var thread = await _threadService.CreateThread(userId, postDto.Title, postDto.Message);
         return ThreadDto.BuildFromThread(thread);
     }
 
     [HttpPost]
     [Route("Thread/{threadId:int}/Reply")]
-    public PostDto CreateReplyToThread(int threadId, CreatePostDto postDto)
+    public async Task<PostDto> CreateReplyToThread(int threadId, CreatePostDto postDto)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
         {
             throw new ValidationException(ExceptionMessages.CreatePostMustBeLoggedIn);
         }
-        var post = _postService.CreatePost(threadId, null, userId, postDto.Title, postDto.Message);
+        var post = await _postService.CreatePost(threadId, null, userId, postDto.Title, postDto.Message);
         return PostDto.BuildFromPost(post);
     }
 
     [HttpPost]
     [Route("Thread/{threadId:int}/Post/{postId:int}/Reply")]
-    public PostDto CreateReplyToPost(int threadId, int postId, CreatePostDto postDto)
+    public async Task<PostDto> CreateReplyToPost(int threadId, int postId, CreatePostDto postDto)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
         {
             throw new ValidationException(ExceptionMessages.CreatePostMustBeLoggedIn);
         }
-        var post = _postService.CreatePost(threadId, postId, userId, postDto.Title, postDto.Message);
+        var post = await _postService.CreatePost(threadId, postId, userId, postDto.Title, postDto.Message);
         return PostDto.BuildFromPost(post);
     }
-
+    
     #endregion
 }

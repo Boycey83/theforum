@@ -1,16 +1,17 @@
 :root {
-    --primary-bg-color: #262729; /* Default value */
-    --body-text-color: #a9a9a9; /* Default value for body text */
-    --primary-accent-color: #90704e; /* Default value for titles and primary accents */
-    --secondary-accent-color: #ad855c; /* Default value for links and highlights */
-    --dark-text-color: #2b241b; /* Default value for text on light backgrounds */
-    --section-bg-color: #393b3d; /* Default value for section backgrounds */
-    --divider-color: #46484a; /* Default value for dividers and subtle borders */
-    --neutral-accent-color: #757778; /* Default value for secondary or neutral accents */
-    --soft-divider-color: #5c5951; /* Subtle dividers or less emphasized elements */
-    --light-accent-color: #b8b8b8; /* Lighter grey for less focal elements */
-    --muted-accent-color: #7c7875; /* Muted borders, dividers or text */
-    --dark-section-bg-color: #353638; /* Darker backgrounds for secondary areas */
+    --primary-bg-color: #FEFAE0;
+    --body-text-color: #D4A373;
+    --primary-accent-color: #CCD5AE;
+    --secondary-accent-color: #D4A373;
+    --dark-text-color: #D4A373;
+    --section-bg-color: #E9EDC9;
+    --divider-color: #D4A373;
+    --neutral-accent-color: #CCD5AE;
+    --soft-divider-color: #D4A373;
+    --light-accent-color: #FEFAE0;
+    --muted-accent-color: #D4A373;
+    --dark-section-bg-color: #E9EDC9;
+    --input-text-color: #D4A373;
 }
 
 body {
@@ -389,7 +390,7 @@ a.link-text:hover {
     padding: 1px 5px 1px 5px;
     background-color: var(--dark-section-bg-color);
     border-style: none;
-    color:lightgray
+    color:var(--input-text-color)
 }
 
 .post-message-input {
@@ -398,7 +399,7 @@ a.link-text:hover {
     padding: 1px 5px 1px 5px;
     background-color: var(--dark-section-bg-color);
     border-style: none;
-    color:lightgray
+    color: var(--input-text-color)
 }
 
 .register-user-error {
