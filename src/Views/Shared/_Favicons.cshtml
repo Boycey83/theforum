@@ -2,27 +2,15 @@
 @inject FaviconService FaviconService
 
 @{
-    const string baseUrl = "/favicon";
+    var faviconDtos = FaviconService.GetFaviconPaths().ToList();
+    var preloadFavicon = faviconDtos.First(favicon => favicon.Size == "32x32");
+    var faviconsToRender = faviconDtos.Where(favicon => favicon.Size != "32x32");
 }
 
-@if (FaviconService.Favicons.Has32Favicon)
+<link rel="preload" as="image" href="@preloadFavicon.Path" type="image/png" sizes="@preloadFavicon.Size">
+<link rel="icon" href="@preloadFavicon.Path" sizes="@preloadFavicon.Size">
+
+@foreach (var favicon in faviconsToRender)
 {
-    <link rel="preload" as="image" href="@($"{baseUrl}/32.png")" type="image/png" sizes="32x32">
-    <link rel="icon" href="@($"{baseUrl}/32.png")" sizes="32x32">
-    @foreach (var size in FaviconService.Favicons.AvailableSizes)
-    {
-        <link rel="icon" type="image/png" sizes="@($"{size}x{size}")" href="@($"{baseUrl}/{size}.png")">
-    }
-}
-else
-{
-    <link rel="preload" as="image" href="/favico-32.png" type="image/png" sizes="32x32">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favico-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favico-16.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favico-48.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/favico-64.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="/favico-128.png">
-    <link rel="icon" type="image/png" sizes="152x152" href="/favico-152.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/favico-192.png">
-    <link rel="icon" type="image/png" sizes="256x256" href="/favico-256.png">
+    <link rel="icon" type="image/png" sizes="@favicon.Size" href="@favicon.Path">
 }

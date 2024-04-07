@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Dapper;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,6 +12,7 @@ using theforum.Filters;
 using theforum.HealthChecks;
 using theforum.Resources;
 using theforum.Settings;
+using theforum.Whitelabel;
 using ISession = NHibernate.ISession;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,6 +93,10 @@ builder.Services.AddScoped<EmailHelper>();
 builder.Services.AddScoped<UserAccountService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ThreadService>();
+builder.Services.AddSingleton<FaviconService>();
+builder.Services.AddSingleton(new BlobServiceClient(dataProtectionKeysBlobConnectionString));
+builder.Services.AddHostedService<FaviconInitializationService>();
+
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>("database");
 
