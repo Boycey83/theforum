@@ -8,7 +8,6 @@
     --divider-color: #D4A373;
     --neutral-accent-color: #CCD5AE;
     --soft-divider-color: #D4A373;
-    --light-accent-color: #FEFAE0;
     --muted-accent-color: #D4A373;
     --dark-section-bg-color: #E9EDC9;
     --input-text-color: #D4A373;
@@ -176,10 +175,6 @@ a.link-text:hover {
     width: 7px;
     display: inline-block;
     border-bottom-width: 2px;
-}
-
-.thread-size-text {
-    color: var(--light-accent-color)
 }
 
 .thread-underline-gold {
