@@ -6,19 +6,20 @@ namespace theforum.Whitelabel;
 
 public class FaviconService
 {
+    private const string ContainerName = "theme";
+    private readonly string[] _supportedSizes = { "16", "32", "48", "64", "128", "152", "192", "256" };
+        
     private readonly IMemoryCache _cache;
     private readonly BlobServiceClient _blobServiceClient;
-    private const string ContainerName = "theme";
     private readonly ILogger<FaviconService> _logger;
-    public CustomFavicons Favicons { get; private set; }
-    private readonly string[] _supportedSizes = { "16", "32", "48", "64", "128", "152", "192", "256" };
+    private CustomFavicons _favicons;
 
     public FaviconService(IMemoryCache cache, BlobServiceClient blobServiceClient, ILogger<FaviconService> logger)
     {
         _cache = cache;
         _blobServiceClient = blobServiceClient;
         _logger = logger;
-        Favicons = new CustomFavicons(ImmutableHashSet<string>.Empty);
+        _favicons = new CustomFavicons(ImmutableHashSet<string>.Empty);
     }
 
     public async Task InitializeAsync(CancellationToken cancellationToken)
@@ -38,7 +39,6 @@ public class FaviconService
                 }
                 var content = await blobClient.DownloadContentAsync(cancellationToken);
                 _cache.Set(fileName, content.Value.Content.ToArray()); // No expiration - for indefinite caching
-                // TODO: Figure out if the memory cache has other eviction policies that may affect us
                 availableSizes.Add(size);
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@ public class FaviconService
                 _logger.LogError(ex, "Failed to load favicon of size {Size}", size);
             }
         }
-        Favicons = new CustomFavicons(ImmutableHashSet.CreateRange(availableSizes));
+        _favicons = new CustomFavicons(ImmutableHashSet.CreateRange(availableSizes));
     }
 
     public byte[]? GetFavicon(string size)
@@ -54,4 +54,15 @@ public class FaviconService
         _cache.TryGetValue($"favico-{size}.png", out byte[]? favicon);
         return favicon;
     }
+
+    public IEnumerable<FaviconDto> GetFaviconPaths() => 
+        _favicons.Has32Favicon 
+            ? GetCustomFaviconPaths() 
+            : GetBuiltinFaviconPaths();
+
+    private IEnumerable<FaviconDto> GetCustomFaviconPaths() => 
+        _favicons.AvailableSizes.Select(size => new FaviconDto($"/favicon/{size}.png", $"{size}x{size}"));
+
+    private IEnumerable<FaviconDto> GetBuiltinFaviconPaths() => 
+        _supportedSizes.Select(size => new FaviconDto($"/favico-{size}.png", $"{size}x{size}"));
 }
