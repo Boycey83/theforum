@@ -47,8 +47,4 @@ theforum.Thread = function (data) {
     self.mailtoUrl = ko.computed(function () {
         return theforum.constants.mailtoTemplate.format(self.postedByEmailAddress());
     });
-
-    self.hasReplies = ko.computed(function () {
-        return self.replies().length > 0;
-    });
 }
